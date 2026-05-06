@@ -123,11 +123,10 @@ rootProject.extensions.configure<WasmYarnRootEnvSpec>("kotlinWasmYarnSpec") {
 
 rootProject.extensions.configure<YarnRootExtension>("kotlinYarn") {
     resolution("diff", "8.0.3")
-    resolution("serialize-javascript", "7.0.5")
-    resolution("webpack", "5.106.2")
-
     resolution("**/diff", "8.0.3")
+    resolution("serialize-javascript", "7.0.5")
     resolution("**/serialize-javascript", "7.0.5")
+    resolution("webpack", "5.106.2")
     resolution("**/webpack", "5.106.2")
     resolution("follow-redirects", "1.16.0")
     resolution("**/follow-redirects", "1.16.0")
@@ -169,7 +168,7 @@ mavenPublishing {
 
     pom {
         name.set("crypto-box-kotlin")
-        description.set("Kotlin Multiplatform port of the Rust crate `crypto_box` — Public-key authenticated encryption (curve25519xsalsa20poly1305)")
+        description.set("Kotlin Multiplatform port of RustCrypto/nacl-compa - Pure Rust implementation of NaCl's crypto_box public-key authenticated encryption primitive which combines the X25519 Elliptic Curve Diffie-Hellman function and the XSalsa20Poly1305 authenticated encryption cipher")
         inceptionYear.set("2026")
         url.set("https://github.com/KotlinMania/crypto-box-kotlin")
 
@@ -196,4 +195,18 @@ mavenPublishing {
             developerConnection.set("scm:git:ssh://github.com/KotlinMania/crypto-box-kotlin.git")
         }
     }
+}
+
+tasks.register("test") {
+    group = "verification"
+    description =
+        "Runs a portable test suite (macOS + JS + WasmJS). Android and non-host native targets are intentionally excluded."
+
+    val defaultTestTasks = listOf(
+        "macosArm64Test",
+        "jsNodeTest",
+        "wasmJsNodeTest",
+    )
+
+    dependsOn(defaultTestTasks.mapNotNull { taskName -> tasks.findByName(taskName) })
 }
