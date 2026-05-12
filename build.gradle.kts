@@ -1,6 +1,7 @@
 import org.gradle.api.tasks.testing.AbstractTestTask
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
+import org.gradle.process.CommandLineArgumentProvider
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension
@@ -62,7 +63,6 @@ kotlin {
     macosArm64 {
         binaries.framework { baseName = "CryptoBox"; xcf.add(this) }
     }
-    // macosX64 was removed in Kotlin 2.3 - "Target is no longer available."
 
     // iOS
     iosArm64 {
@@ -82,7 +82,6 @@ kotlin {
     tvosSimulatorArm64 {
         binaries.framework { baseName = "CryptoBox"; xcf.add(this) }
     }
-    // tvosX64 was removed in Kotlin 2.3 - "Target is no longer available."
 
     // watchOS
     watchosArm32 {
@@ -97,7 +96,6 @@ kotlin {
     watchosSimulatorArm64 {
         binaries.framework { baseName = "CryptoBox"; xcf.add(this) }
     }
-    // watchosX64 was removed in Kotlin 2.3 - "Target is no longer available."
 
     // Linux
     linuxX64()
@@ -352,10 +350,12 @@ val codeqlCompileJvm = tasks.register<JavaExec>("codeqlCompileJvm") {
     inputs.files(sources).withPathSensitivity(PathSensitivity.RELATIVE)
     inputs.files(codeqlSourceClasspath).withNormalizer(ClasspathNormalizer::class.java)
     outputs.dir(outDir)
+    onlyIf("commonMain Kotlin sources exist for CodeQL extraction") {
+        sources.files.isNotEmpty()
+    }
 
-    doFirst {
-        outDir.get().asFile.mkdirs()
-        args = listOf(
+    argumentProviders.add(CommandLineArgumentProvider {
+        listOf(
             "-d", outDir.get().asFile.absolutePath,
             "-classpath", codeqlSourceClasspath.asPath,
             "-jvm-target", "21",
@@ -367,6 +367,10 @@ val codeqlCompileJvm = tasks.register<JavaExec>("codeqlCompileJvm") {
             "-opt-in", "kotlin.concurrent.atomics.ExperimentalAtomicApi",
             "-Xexpect-actual-classes",
         ) + sources.files.map { it.absolutePath }
+    })
+
+    doFirst {
+        outDir.get().asFile.mkdirs()
     }
 }
 
