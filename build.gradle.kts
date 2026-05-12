@@ -347,15 +347,30 @@ val codeqlCompileJvm = tasks.register<JavaExec>("codeqlCompileJvm") {
 
     val outDir = layout.buildDirectory.dir("classes/kotlin/codeql-jvm")
     val sources = fileTree("src/commonMain/kotlin") { include("**/*.kt") }
+    val emptySourceSentinel = layout.buildDirectory.file("generated/codeql-empty/CodeqlEmptySourceSentinel.kt")
     inputs.files(sources).withPathSensitivity(PathSensitivity.RELATIVE)
     inputs.files(codeqlSourceClasspath).withNormalizer(ClasspathNormalizer::class.java)
     outputs.dir(outDir)
-    onlyIf("commonMain Kotlin sources exist for CodeQL extraction") {
-        sources.files.isNotEmpty()
-    }
+    outputs.file(emptySourceSentinel)
 
-    argumentProviders.add(CommandLineArgumentProvider {
-        listOf(
+    doFirst {
+        outDir.get().asFile.mkdirs()
+        val sourceFiles =
+            if (sources.files.isEmpty()) {
+                val sentinel = emptySourceSentinel.get().asFile
+                sentinel.parentFile.mkdirs()
+                sentinel.writeText(
+                    """
+                    package io.github.kotlinmania.cryptobox
+
+                    internal object CodeqlEmptySourceSentinel
+                    """.trimIndent() + "\n",
+                )
+                listOf(sentinel)
+            } else {
+                sources.files.toList()
+            }
+        args = listOf(
             "-d", outDir.get().asFile.absolutePath,
             "-classpath", codeqlSourceClasspath.asPath,
             "-jvm-target", "21",
@@ -366,11 +381,7 @@ val codeqlCompileJvm = tasks.register<JavaExec>("codeqlCompileJvm") {
             "-opt-in", "kotlin.time.ExperimentalTime",
             "-opt-in", "kotlin.concurrent.atomics.ExperimentalAtomicApi",
             "-Xexpect-actual-classes",
-        ) + sources.files.map { it.absolutePath }
-    })
-
-    doFirst {
-        outDir.get().asFile.mkdirs()
+        ) + sourceFiles.map { it.absolutePath }
     }
 }
 
