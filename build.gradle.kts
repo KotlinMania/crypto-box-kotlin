@@ -57,10 +57,18 @@ kotlin {
         binaries.framework { baseName = "CryptoBox"; xcf.add(this) }
     }
     iosSimulatorArm64 {
-        binaries.framework { baseName = "CryptoBox"; xcf.add(this) }
+        binaries.framework {
+            baseName = "CryptoBox"
+            isStatic = true
+            xcf.add(this)
+        }
     }
     iosX64 {
-        binaries.framework { baseName = "CryptoBox"; xcf.add(this) }
+        binaries.framework {
+            baseName = "CryptoBox"
+            isStatic = true
+            xcf.add(this)
+        }
     }
 
     tvosArm64 {
