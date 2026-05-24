@@ -4,6 +4,7 @@ import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import java.util.zip.ZipInputStream
 import org.gradle.api.GradleException
+import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.ClasspathNormalizer
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.testing.AbstractTestTask
@@ -403,6 +404,27 @@ mavenPublishing {
             url.set("https://github.com/KotlinMania/crypto-box-kotlin")
             connection.set("scm:git:git://github.com/KotlinMania/crypto-box-kotlin.git")
             developerConnection.set("scm:git:ssh://github.com/KotlinMania/crypto-box-kotlin.git")
+        }
+    }
+}
+
+// Skip publishing androidNative targets that have no source files yet.
+// These targets are declared in kotlin {} but have no src/*AndroidNative* directories.
+// Publishing them without artifacts causes FileNotFoundException during metadata generation.
+afterEvaluate {
+    tasks.configureEach {
+        val taskName = name
+        if (taskName.startsWith("generateMetadataFileFor") && taskName.contains("AndroidNative", ignoreCase = true)) {
+            enabled = false
+        }
+        if (taskName.startsWith("generatePomFileFor") && taskName.contains("AndroidNative", ignoreCase = true)) {
+            enabled = false
+        }
+        if (taskName.startsWith("publish") && taskName.contains("AndroidNative", ignoreCase = true)) {
+            enabled = false
+        }
+        if (taskName.startsWith("sign") && taskName.contains("AndroidNative", ignoreCase = true)) {
+            enabled = false
         }
     }
 }
