@@ -1,6 +1,5 @@
 {
   "type": "port",
-  "parity_mode": false,
   "name": "crypto-box-kotlin",
   "source": {
     "path": "tmp/crypto_box/src",
