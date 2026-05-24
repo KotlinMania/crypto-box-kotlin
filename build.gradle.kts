@@ -408,27 +408,6 @@ mavenPublishing {
     }
 }
 
-// Skip publishing androidNative targets that have no source files yet.
-// These targets are declared in kotlin {} but have no src/*AndroidNative* directories.
-// Publishing them without artifacts causes FileNotFoundException during metadata generation.
-afterEvaluate {
-    tasks.configureEach {
-        val taskName = name
-        if (taskName.startsWith("generateMetadataFileFor") && taskName.contains("AndroidNative", ignoreCase = true)) {
-            enabled = false
-        }
-        if (taskName.startsWith("generatePomFileFor") && taskName.contains("AndroidNative", ignoreCase = true)) {
-            enabled = false
-        }
-        if (taskName.startsWith("publish") && taskName.contains("AndroidNative", ignoreCase = true)) {
-            enabled = false
-        }
-        if (taskName.startsWith("sign") && taskName.contains("AndroidNative", ignoreCase = true)) {
-            enabled = false
-        }
-    }
-}
-
 // ---------------------------------------------------------------------------
 // CodeQL Java/Kotlin extraction task
 //
