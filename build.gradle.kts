@@ -29,7 +29,7 @@ plugins {
 }
 
 group = "io.github.kotlinmania"
-version = "0.1.1"
+version = "0.1.2"
 
 val androidCommandLineToolsRevision = "14742923"
 val projectCompileSdk = "34"
@@ -51,6 +51,22 @@ val androidSdkManager = projectAndroidSdkDir.resolve(
     },
 )
 val androidSdkInstallMarker = projectAndroidSdkDir.resolve(".install-complete")
+val publicationMarkerGeneratedDir = layout.buildDirectory.dir("generated/publication-marker/commonMain/kotlin")
+val generatePublicationMarker = tasks.register("generatePublicationMarker") {
+    outputs.dir(publicationMarkerGeneratedDir)
+
+    doLast {
+        val packageDir = publicationMarkerGeneratedDir.get().asFile.resolve("io/github/kotlinmania/cryptobox")
+        packageDir.mkdirs()
+        packageDir.resolve("PublicationMarker.kt").writeText(
+            """
+            package io.github.kotlinmania.cryptobox
+
+            internal object CryptoBoxPublicationMarker
+            """.trimIndent() + "\n",
+        )
+    }
+}
 
 fun writeAndroidLocalProperties() {
     val sdkDirPropertyValue = projectAndroidSdkDir.absolutePath.replace("\\", "/")
@@ -276,6 +292,7 @@ kotlin {
 
     sourceSets {
         val commonMain by getting {
+            kotlin.srcDir(publicationMarkerGeneratedDir)
             dependencies {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.11.0")
@@ -292,6 +309,16 @@ kotlin {
 
     }
     jvmToolchain(21)
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask<*>>().configureEach {
+    dependsOn(generatePublicationMarker)
+}
+
+tasks.matching {
+    it.name == "sourcesJar" || it.name.endsWith("SourcesJar")
+}.configureEach {
+    dependsOn(generatePublicationMarker)
 }
 
 tasks.withType<AbstractTestTask>().configureEach {
