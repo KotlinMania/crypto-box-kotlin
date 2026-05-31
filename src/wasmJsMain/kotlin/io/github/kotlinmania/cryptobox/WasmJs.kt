@@ -1,4 +1,3 @@
-// port-lint: ignore
 // Placeholder file to enable wasmJs target publishing.
 // This file exists so that the Kotlin Multiplatform Gradle plugin
 // can generate a klib artifact for Maven publishing.
