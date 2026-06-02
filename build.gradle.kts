@@ -237,9 +237,6 @@ kotlin {
         binaries.framework { baseName = "CryptoBox"; xcf.add(this) }
     }
 
-    watchosArm32 {
-        binaries.framework { baseName = "CryptoBox"; xcf.add(this) }
-    }
     watchosArm64 {
         binaries.framework { baseName = "CryptoBox"; xcf.add(this) }
     }
@@ -519,7 +516,7 @@ val codeqlCompileJvm = tasks.register<JavaExec>("codeqlCompileJvm") {
                 // one Kotlin source to feed kotlinc; replaced by real
                 // commonMain content once porting begins.
                 package io.github.kotlinmania.cryptobox.codeql
-
+ 
                 private object _CodeqlEmptySource
                 """.trimIndent(),
             )
@@ -612,8 +609,6 @@ val fullTargetBuildTaskNames = setOf(
     "tvosArm64TestBinaries",
     "tvosSimulatorArm64Binaries",
     "tvosSimulatorArm64TestBinaries",
-    "watchosArm32Binaries",
-    "watchosArm32TestBinaries",
     "watchosArm64Binaries",
     "watchosArm64TestBinaries",
     "watchosDeviceArm64Binaries",
