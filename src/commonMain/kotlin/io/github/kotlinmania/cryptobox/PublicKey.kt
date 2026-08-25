@@ -5,7 +5,7 @@ import io.github.kotlinmania.cryptobox.internal.Blake2b
 import io.github.kotlinmania.cryptobox.internal.Curve25519
 
 /**
- * A `crypto_box` public key.
+ * A CryptoBox public key.
  */
 public class PublicKey(
     private val bytes: ByteArray,

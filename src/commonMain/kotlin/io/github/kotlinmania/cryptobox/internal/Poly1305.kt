@@ -121,18 +121,18 @@ internal object Poly1305 {
         val f3 = ((h3 ushr 18) or (h4 shl 8)) and 0xFFFFFFFFL
 
         val s0 = (key[16].toLong() and 0xFF) or ((key[17].toLong() and 0xFF) shl 8) or ((key[18].toLong() and 0xFF) shl 16) or ((key[19].toLong() and 0xFF) shl 24)
-        val s1_w = (key[20].toLong() and 0xFF) or ((key[21].toLong() and 0xFF) shl 8) or ((key[22].toLong() and 0xFF) shl 16) or ((key[23].toLong() and 0xFF) shl 24)
-        val s2_w = (key[24].toLong() and 0xFF) or ((key[25].toLong() and 0xFF) shl 8) or ((key[26].toLong() and 0xFF) shl 16) or ((key[27].toLong() and 0xFF) shl 24)
-        val s3_w = (key[28].toLong() and 0xFF) or ((key[29].toLong() and 0xFF) shl 8) or ((key[30].toLong() and 0xFF) shl 16) or ((key[31].toLong() and 0xFF) shl 24)
+        val s1W = (key[20].toLong() and 0xFF) or ((key[21].toLong() and 0xFF) shl 8) or ((key[22].toLong() and 0xFF) shl 16) or ((key[23].toLong() and 0xFF) shl 24)
+        val s2W = (key[24].toLong() and 0xFF) or ((key[25].toLong() and 0xFF) shl 8) or ((key[26].toLong() and 0xFF) shl 16) or ((key[27].toLong() and 0xFF) shl 24)
+        val s3W = (key[28].toLong() and 0xFF) or ((key[29].toLong() and 0xFF) shl 8) or ((key[30].toLong() and 0xFF) shl 16) or ((key[31].toLong() and 0xFF) shl 24)
 
         var carry = 0L
         val t0 = (f0 + s0) and 0xFFFFFFFFL
         carry = (f0 + s0) ushr 32
-        val t1 = (f1 + s1_w + carry) and 0xFFFFFFFFL
-        carry = (f1 + s1_w + carry) ushr 32
-        val t2 = (f2 + s2_w + carry) and 0xFFFFFFFFL
-        carry = (f2 + s2_w + carry) ushr 32
-        val t3 = (f3 + s3_w + carry) and 0xFFFFFFFFL
+        val t1 = (f1 + s1W + carry) and 0xFFFFFFFFL
+        carry = (f1 + s1W + carry) ushr 32
+        val t2 = (f2 + s2W + carry) and 0xFFFFFFFFL
+        carry = (f2 + s2W + carry) ushr 32
+        val t3 = (f3 + s3W + carry) and 0xFFFFFFFFL
 
         val tag = ByteArray(16)
         tag[0] = (t0 and 0xFF).toByte()
