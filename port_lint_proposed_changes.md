@@ -1,6 +1,6 @@
 # port-lint Proposed Changes
 
-**Generated:** 2026-05-24
+**Generated:** 2026-08-25
 **Source:** tmp/crypto_box/src
 **Target:** src/commonMain/kotlin/io/github/kotlinmania/cryptobox
 

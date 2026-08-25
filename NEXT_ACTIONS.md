@@ -4,14 +4,14 @@ Based on AST analysis, here are the concrete next steps.
 
 ## Summary
 
-- **Files Present:** 0/3 (0.0%)
-- **Function parity:** 0/29 matched — 0.0%
-- **Class/type parity:** 0/4 matched — 0.0%
-- **Combined symbol parity:** 0/33 matched — 0.0%
-- **Average inline-code cosine:** 0.00 (function body across 0 matched files)
-- **Average documentation cosine:** 0.00 (doc text across 0 matched files)
-- **Cheat-zeroed Files:** 0
-- **Critical Issues:** 0 files with <0.60 function similarity
+- **Files Present:** 3/3 (100.0%)
+- **Function parity:** 11/35 matched (target 62) — 31.4%
+- **Class/type parity:** 4/11 matched (target 10) — 36.4%
+- **Combined symbol parity:** 15/46 matched (target 72) — 32.6%
+- **Average inline-code cosine:** 0.00 (function body across 3 matched files)
+- **Average documentation cosine:** 0.41 (doc text across 3 matched files)
+- **Cheat-zeroed Files:** 3
+- **Critical Issues:** 3 files with <0.60 function similarity
 
 ## Priority 1: Fix Incomplete High-Dependency Files
 
@@ -27,6 +27,40 @@ No missing high-value files detected.
 
 Every matched file is listed below with function and type symbol parity.
 
+### 1. lib
+
+- **Target:** `cryptobox.CryptoBox [ZERO]`
+- **Similarity:** 0.00
+- **Dependents:** 0
+- **Priority Score:** 131610.0
+- **Functions:** 1/9 matched (target 42)
+- **Missing functions:** `new`, `encrypt_in_place`, `encrypt_in_place_detached`, `decrypt_in_place`, `decrypt_in_place_detached`, `get_seal_nonce`, `test_public_key_serialization`, `test_secret_key_serialization`
+- **Types:** 2/7 matched (target 8)
+- **Missing types:** `Tag`, `CryptoBox`, `NonceSize`, `TagSize`, `CiphertextOverhead`
+- **Tests:** 1/3 matched
+
+### 2. secret_key
+
+- **Target:** `cryptobox.SecretKey [ZERO]`
+- **Similarity:** 0.00
+- **Dependents:** 0
+- **Priority Score:** 91610.0
+- **Functions:** 6/14 matched (target 11)
+- **Missing functions:** `to_scalar`, `fmt`, `drop`, `from`, `eq`, `try_from`, `serialize`, `deserialize`
+- **Types:** 1/2 matched (target 1)
+- **Missing types:** `Error`
+
+### 3. public_key
+
+- **Target:** `cryptobox.PublicKey [ZERO]`
+- **Similarity:** 0.00
+- **Dependents:** 0
+- **Priority Score:** 91410.0
+- **Functions:** 4/12 matched (target 9)
+- **Missing functions:** `to_bytes`, `as_ref`, `from`, `try_from`, `partial_cmp`, `cmp`, `serialize`, `deserialize`
+- **Types:** 1/2 matched (target 1)
+- **Missing types:** `Error`
+
 ## Success Criteria
 
 For each file to be considered "complete":
@@ -35,17 +69,4 @@ For each file to be considered "complete":
 - All tests ported
 - Documentation ported
 - port-lint header present
-
-## Reexport / Wiring Modules
-
-These files match `reexport_modules` patterns in `.ast_distance_config.json`. They are filtered out of
-normal priority and missing-file ladders because they are wiring
-modules, not direct logic ports. Consult them for call-site routing;
-do not treat them as the next implementation target by default.
-
-### Missing
-
-| Source | Expected target | Deps | Source path | Expected path |
-|--------|-----------------|------|-------------|---------------|
-| `lib` | `Lib` | 0 | `lib.rs` | `Lib.kt` |
 
