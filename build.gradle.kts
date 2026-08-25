@@ -920,6 +920,16 @@ tasks.register("swiftExportSmokeTest") {
     group = "verification"
     description = "Builds the Swift Export SPM package and runs swift test against it."
     outputs.upToDateWhen { false }
+    mustRunAfter(
+        "macosArm64Test",
+        "jvmTest",
+        "jsNodeTest",
+        "wasmJsNodeTest",
+        "wasmWasiNodeTest",
+        "testAndroidHostTest",
+        "compileKotlinWasmWasi",
+        "compileKotlinWasmJs",
+    )
 
     doLast {
         val execOperations = serviceOf<ExecOperations>()
@@ -960,30 +970,31 @@ tasks.register("swiftExportSmokeTest") {
                 )
             }.assertNormalExitValue()
 
-        val generatedPackageSwift =
-            layout.buildDirectory
-                .file("SPMPackage/macosArm64/Debug/Package.swift")
-                .get()
-                .asFile
-        if (generatedPackageSwift.exists()) {
-            val text = generatedPackageSwift.readText()
-            if (!text.contains("platforms:")) {
-                generatedPackageSwift.writeText(
-                    text.replaceFirst(
-                        Regex("""(Package\(\s*name:\s*"[^"]*",)"""),
-                        "$1\n    platforms: [.macOS(.v14)],",
-                    ),
-                )
+        val spmDir = layout.buildDirectory.dir("SPMPackage").orNull?.asFile
+        if (spmDir != null && spmDir.exists()) {
+            spmDir.walkTopDown().filter { it.name == "Package.swift" }.forEach { file ->
+                val text = file.readText()
+                if (!text.contains("platforms:")) {
+                    file.writeText(
+                        text.replaceFirst(
+                            Regex("""(let package = Package\s*\(\s*name:\s*"[^"]*",)"""),
+                            "$1\n    platforms: [.macOS(.v14)],",
+                        ),
+                    )
+                }
             }
         }
-
-        val scratchDir = layout.buildDirectory.dir("swift-test-scratch").get().asFile
-        scratchDir.deleteRecursively()
 
         execOperations
             .exec {
                 workingDir = layout.projectDirectory.dir("swift-test-harness").asFile
-                commandLine("swift", "test", "--scratch-path", scratchDir.absolutePath)
+                commandLine("swift", "package", "reset")
+            }.assertNormalExitValue()
+
+        execOperations
+            .exec {
+                workingDir = layout.projectDirectory.dir("swift-test-harness").asFile
+                commandLine("swift", "test")
             }.assertNormalExitValue()
     }
 }
