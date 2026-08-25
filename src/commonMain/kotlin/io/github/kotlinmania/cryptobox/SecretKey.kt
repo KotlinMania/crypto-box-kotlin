@@ -6,7 +6,7 @@ import io.github.kotlinmania.cryptobox.internal.Curve25519
 import kotlin.random.Random
 
 /**
- * A `crypto_box` secret key.
+ * A CryptoBox secret key.
  */
 public class SecretKey(
     private val bytes: ByteArray,

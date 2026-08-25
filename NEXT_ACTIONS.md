@@ -8,9 +8,9 @@ Based on AST analysis, here are the concrete next steps.
 - **Function parity:** 11/35 matched (target 62) — 31.4%
 - **Class/type parity:** 4/11 matched (target 10) — 36.4%
 - **Combined symbol parity:** 15/46 matched (target 72) — 32.6%
-- **Average inline-code cosine:** 0.00 (function body across 3 matched files)
-- **Average documentation cosine:** 0.41 (doc text across 3 matched files)
-- **Cheat-zeroed Files:** 3
+- **Average inline-code cosine:** 0.16 (function body across 3 matched files)
+- **Average documentation cosine:** 0.37 (doc text across 3 matched files)
+- **Cheat-zeroed Files:** 0
 - **Critical Issues:** 3 files with <0.60 function similarity
 
 ## Priority 1: Fix Incomplete High-Dependency Files
@@ -29,10 +29,10 @@ Every matched file is listed below with function and type symbol parity.
 
 ### 1. lib
 
-- **Target:** `cryptobox.CryptoBox [ZERO]`
-- **Similarity:** 0.00
+- **Target:** `cryptobox.CryptoBox`
+- **Similarity:** 0.08
 - **Dependents:** 0
-- **Priority Score:** 131610.0
+- **Priority Score:** 131609.2
 - **Functions:** 1/9 matched (target 42)
 - **Missing functions:** `new`, `encrypt_in_place`, `encrypt_in_place_detached`, `decrypt_in_place`, `decrypt_in_place_detached`, `get_seal_nonce`, `test_public_key_serialization`, `test_secret_key_serialization`
 - **Types:** 2/7 matched (target 8)
@@ -41,10 +41,10 @@ Every matched file is listed below with function and type symbol parity.
 
 ### 2. secret_key
 
-- **Target:** `cryptobox.SecretKey [ZERO]`
-- **Similarity:** 0.00
+- **Target:** `cryptobox.SecretKey`
+- **Similarity:** 0.23
 - **Dependents:** 0
-- **Priority Score:** 91610.0
+- **Priority Score:** 91607.7
 - **Functions:** 6/14 matched (target 11)
 - **Missing functions:** `to_scalar`, `fmt`, `drop`, `from`, `eq`, `try_from`, `serialize`, `deserialize`
 - **Types:** 1/2 matched (target 1)
@@ -52,10 +52,10 @@ Every matched file is listed below with function and type symbol parity.
 
 ### 3. public_key
 
-- **Target:** `cryptobox.PublicKey [ZERO]`
-- **Similarity:** 0.00
+- **Target:** `cryptobox.PublicKey`
+- **Similarity:** 0.17
 - **Dependents:** 0
-- **Priority Score:** 91410.0
+- **Priority Score:** 91408.3
 - **Functions:** 4/12 matched (target 9)
 - **Missing functions:** `to_bytes`, `as_ref`, `from`, `try_from`, `partial_cmp`, `cmp`, `serialize`, `deserialize`
 - **Types:** 1/2 matched (target 1)
