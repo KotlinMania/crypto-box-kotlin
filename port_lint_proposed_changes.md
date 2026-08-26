@@ -1,7 +1,7 @@
 # port-lint Proposed Changes
 
 **Generated:** 2026-08-25
-**Source:** tmp/crypto_box/src
+**Source:** tmp/crypto-box/src
 **Target:** src/commonMain/kotlin/io/github/kotlinmania/cryptobox
 
 These are review proposals only. They are emitted when a Rust -> Kotlin pair matches only after fallback normalization, so the existing `port-lint` header is not an exact provenance match.
