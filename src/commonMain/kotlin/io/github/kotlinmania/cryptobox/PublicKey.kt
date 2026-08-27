@@ -1,4 +1,4 @@
-// port-lint: source crypto_box/src/public_key.rs
+// port-lint: source public_key.rs
 package io.github.kotlinmania.cryptobox
 
 import io.github.kotlinmania.cryptobox.internal.Blake2b

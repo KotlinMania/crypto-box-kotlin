@@ -1,4 +1,4 @@
-// port-lint: source crypto_box/tests/lib.rs
+// port-lint: source lib.rs
 package io.github.kotlinmania.cryptobox.internal
 
 internal object ChaCha20 {
