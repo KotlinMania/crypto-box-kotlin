@@ -4,14 +4,14 @@ Based on AST analysis, here are the concrete next steps.
 
 ## Summary
 
-- **Files Present:** 4/4 (100.0%)
-- **Function parity:** 12/39 matched (target 78) — 30.8%
-- **Class/type parity:** 2/11 matched (target 11) — 18.2%
-- **Combined symbol parity:** 14/50 matched (target 89) — 28.0%
-- **Average inline-code cosine:** 0.20 (function body across 2 matched files)
-- **Average documentation cosine:** 0.37 (doc text across 2 matched files)
-- **Cheat-zeroed Files:** 2
-- **Critical Issues:** 4 files with <0.60 function similarity
+- **Files Present:** 3/3 (100.0%)
+- **Function parity:** 11/35 matched (target 78) — 31.4%
+- **Class/type parity:** 4/11 matched (target 11) — 36.4%
+- **Combined symbol parity:** 15/46 matched (target 89) — 32.6%
+- **Average inline-code cosine:** 0.16 (function body across 3 matched files)
+- **Average documentation cosine:** 0.37 (doc text across 3 matched files)
+- **Cheat-zeroed Files:** 0
+- **Critical Issues:** 3 files with <0.60 function similarity
 
 ## Priority 1: Fix Incomplete High-Dependency Files
 
@@ -27,19 +27,19 @@ No missing high-value files detected.
 
 Every matched file is listed below with function and type symbol parity.
 
-### 1. crypto_box.lib
+### 1. lib
 
-- **Target:** `internal.FieldElement [STUB]`
-- **Similarity:** 0.00
+- **Target:** `cryptobox.CryptoBox`
+- **Similarity:** 0.08
 - **Dependents:** 0
-- **Priority Score:** 161610.0
-- **Functions:** 0/9 matched (target 16)
-- **Missing functions:** `new`, `encrypt_in_place`, `encrypt_in_place_detached`, `decrypt_in_place`, `decrypt_in_place_detached`, `get_seal_nonce`, `test_public_key_serialization`, `test_secret_key_serialization`, `test_public_key_from_slice`
-- **Types:** 0/7 matched (target 1)
-- **Missing types:** `Tag`, `ChaChaBox`, `SalsaBox`, `CryptoBox`, `NonceSize`, `TagSize`, `CiphertextOverhead`
-- **Tests:** 0/3 matched
+- **Priority Score:** 131609.2
+- **Functions:** 1/9 matched (target 58)
+- **Missing functions:** `new`, `encrypt_in_place`, `encrypt_in_place_detached`, `decrypt_in_place`, `decrypt_in_place_detached`, `get_seal_nonce`, `test_public_key_serialization`, `test_secret_key_serialization`
+- **Types:** 2/7 matched (target 9)
+- **Missing types:** `Tag`, `CryptoBox`, `NonceSize`, `TagSize`, `CiphertextOverhead`
+- **Tests:** 1/3 matched
 
-### 2. crypto_box.secret_key
+### 2. secret_key
 
 - **Target:** `cryptobox.SecretKey`
 - **Similarity:** 0.23
@@ -50,7 +50,7 @@ Every matched file is listed below with function and type symbol parity.
 - **Types:** 1/2 matched (target 1)
 - **Missing types:** `Error`
 
-### 3. crypto_box.public_key
+### 3. public_key
 
 - **Target:** `cryptobox.PublicKey`
 - **Similarity:** 0.17
@@ -60,18 +60,6 @@ Every matched file is listed below with function and type symbol parity.
 - **Missing functions:** `to_bytes`, `as_ref`, `from`, `try_from`, `partial_cmp`, `cmp`, `serialize`, `deserialize`
 - **Types:** 1/2 matched (target 1)
 - **Missing types:** `Error`
-
-### 4. tests.lib
-
-- **Target:** `cryptobox.CryptoBox [STUB]`
-- **Similarity:** 0.00
-- **Dependents:** 0
-- **Priority Score:** 20410.0
-- **Functions:** 2/4 matched (target 42)
-- **Missing functions:** `edwards_to_montgomery`, `seal`
-- **Types:** 0/0 matched (target 8)
-- **Missing types:** _none_
-- **Tests:** 2/4 matched
 
 ## Success Criteria
 
