@@ -1,4 +1,4 @@
-// port-lint: source lib.rs
+// port-lint: source crypto_box/tests/lib.rs
 package io.github.kotlinmania.cryptobox
 
 import io.github.kotlinmania.cryptobox.internal.ChaCha20
