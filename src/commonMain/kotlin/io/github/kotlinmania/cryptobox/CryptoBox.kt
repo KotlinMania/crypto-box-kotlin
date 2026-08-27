@@ -18,7 +18,7 @@ public class SalsaBox(
     private val key: ByteArray,
 ) {
     public constructor(publicKey: PublicKey, secretKey: SecretKey) : this(
-        deriveKey(publicKey, secretKey)
+        deriveKey(publicKey, secretKey),
     )
 
     public fun encrypt(nonce: ByteArray, plaintext: ByteArray): ByteArray =
@@ -48,7 +48,7 @@ public class ChaChaBox(
     private val key: ByteArray,
 ) {
     public constructor(publicKey: PublicKey, secretKey: SecretKey) : this(
-        deriveKey(publicKey, secretKey)
+        deriveKey(publicKey, secretKey),
     )
 
     public fun encrypt(nonce: ByteArray, plaintext: ByteArray): ByteArray =

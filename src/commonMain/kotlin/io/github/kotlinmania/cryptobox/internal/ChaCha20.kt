@@ -2,17 +2,21 @@
 package io.github.kotlinmania.cryptobox.internal
 
 internal object ChaCha20 {
-    private val SIGMA = intArrayOf(
-        0x61707865, 0x3320646e, 0x79622d32, 0x6b206574
-    )
+    private val SIGMA =
+        intArrayOf(
+            0x61707865,
+            0x3320646e,
+            0x79622d32,
+            0x6b206574,
+        )
 
     private fun rotl(v: Int, c: Int): Int = (v shl c) or (v ushr (32 - c))
 
     private fun loadLittleEndian32(bytes: ByteArray, offset: Int): Int =
         (bytes[offset].toInt() and 0xFF) or
-        ((bytes[offset + 1].toInt() and 0xFF) shl 8) or
-        ((bytes[offset + 2].toInt() and 0xFF) shl 16) or
-        ((bytes[offset + 3].toInt() and 0xFF) shl 24)
+            ((bytes[offset + 1].toInt() and 0xFF) shl 8) or
+            ((bytes[offset + 2].toInt() and 0xFF) shl 16) or
+            ((bytes[offset + 3].toInt() and 0xFF) shl 24)
 
     private fun storeLittleEndian32(v: Int, bytes: ByteArray, offset: Int) {
         bytes[offset] = (v and 0xFF).toByte()
@@ -37,10 +41,14 @@ internal object ChaCha20 {
     }
 
     private fun qr(x: IntArray, a: Int, b: Int, c: Int, d: Int) {
-        x[a] += x[b]; x[d] = rotl(x[d] xor x[a], 16)
-        x[c] += x[d]; x[b] = rotl(x[b] xor x[c], 12)
-        x[a] += x[b]; x[d] = rotl(x[d] xor x[a], 8)
-        x[c] += x[d]; x[b] = rotl(x[b] xor x[c], 7)
+        x[a] += x[b]
+        x[d] = rotl(x[d] xor x[a], 16)
+        x[c] += x[d]
+        x[b] = rotl(x[b] xor x[c], 12)
+        x[a] += x[b]
+        x[d] = rotl(x[d] xor x[a], 8)
+        x[c] += x[d]
+        x[b] = rotl(x[b] xor x[c], 7)
     }
 
     fun hchacha20(key: ByteArray, input: ByteArray): ByteArray {

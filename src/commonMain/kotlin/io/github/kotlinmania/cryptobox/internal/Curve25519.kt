@@ -30,8 +30,12 @@ internal object Curve25519 {
             val bit = (clamped[byteIndex].toInt() ushr bitIndex) and 1
             swap = swap xor bit
             if (swap == 1) {
-                val tx = x2; x2 = x3; x3 = tx
-                val tz = z2; z2 = z3; z3 = tz
+                val tx = x2
+                x2 = x3
+                x3 = tx
+                val tz = z2
+                z2 = z3
+                z3 = tz
             }
             swap = bit
 
@@ -50,8 +54,12 @@ internal object Curve25519 {
             z2 = e.mul(aa.add(A24.mul(e)))
         }
         if (swap == 1) {
-            val tx = x2; x2 = x3; x3 = tx
-            val tz = z2; z2 = z3; z3 = tz
+            val tx = x2
+            x2 = x3
+            x3 = tx
+            val tz = z2
+            z2 = z3
+            z3 = tz
         }
         return x2.mul(z2.invert()).toByteArray()
     }
