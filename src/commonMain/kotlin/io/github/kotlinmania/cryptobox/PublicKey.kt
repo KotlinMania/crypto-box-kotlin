@@ -2,7 +2,6 @@
 package io.github.kotlinmania.cryptobox
 
 import io.github.kotlinmania.cryptobox.internal.Blake2b
-import io.github.kotlinmania.cryptobox.internal.Curve25519
 
 /**
  * A CryptoBox public key.
