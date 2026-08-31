@@ -2,7 +2,7 @@
   "type": "port",
   "name": "crypto-box-kotlin",
   "source": {
-    "path": "tmp/crypto_box/src",
+    "path": "tmp",
     "lang": "rust"
   },
   "target": {
