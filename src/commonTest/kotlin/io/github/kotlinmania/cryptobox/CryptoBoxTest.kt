@@ -1,4 +1,4 @@
-// port-lint: tests crypto_box/tests/lib.rs
+// port-lint: tests lib.rs
 package io.github.kotlinmania.cryptobox
 
 import kotlin.test.Test
