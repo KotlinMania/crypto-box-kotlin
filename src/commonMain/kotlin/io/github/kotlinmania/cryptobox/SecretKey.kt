@@ -3,6 +3,8 @@ package io.github.kotlinmania.cryptobox
 
 import io.github.kotlinmania.cryptobox.internal.Blake2b
 import io.github.kotlinmania.cryptobox.internal.Curve25519
+import io.github.kotlinmania.zeroize.Zeroize
+import io.github.kotlinmania.zeroize.zeroize
 import kotlin.random.Random
 
 /**
@@ -10,11 +12,15 @@ import kotlin.random.Random
  */
 public class SecretKey(
     private val bytes: ByteArray,
-) {
+) : Zeroize {
     init {
         require(bytes.size == KEY_SIZE) {
             "Invalid secret key length: expected $KEY_SIZE bytes, got ${bytes.size}"
         }
+    }
+
+    override fun zeroize() {
+        bytes.zeroize()
     }
 
     public fun publicKey(): PublicKey {
