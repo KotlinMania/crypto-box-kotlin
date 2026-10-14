@@ -1,10 +1,50 @@
 // port-lint: source lib.rs
 package io.github.kotlinmania.cryptobox.internal
 
+import io.github.kotlinmania.digest.Digest
+import io.github.kotlinmania.digest.Output
+
 /**
- * BLAKE2b cryptographic hash (RFC 7693) for 24-byte seal nonce derivation.
+ * BLAKE2b cryptographic hash (RFC 7693) for 24-byte seal nonce derivation,
+ * implementing [Digest] from `digest-kotlin`.
  */
+internal class Blake2b24 : Digest {
+    override val outputSize: Int = 24
+
+    private val buffer = mutableListOf<ByteArray>()
+
+    override fun update(data: ByteArray) {
+        if (data.isNotEmpty()) {
+            buffer.add(data.copyOf())
+        }
+    }
+
+    override fun reset() {
+        buffer.clear()
+    }
+
+    override fun finalizeInto(out: Output<*>) {
+        require(out.size == outputSize) { "Invalid output buffer length: expected $outputSize, got ${out.size}" }
+        val totalLen = buffer.sumOf { it.size }
+        val combined = ByteArray(totalLen)
+        var offset = 0
+        for (chunk in buffer) {
+            chunk.copyInto(combined, offset, 0, chunk.size)
+            offset += chunk.size
+        }
+        val digest = Blake2b.hash24(combined)
+        digest.copyInto(out, 0, 0, outputSize)
+    }
+
+    override fun finalizeIntoReset(out: Output<*>) {
+        finalizeInto(out)
+        reset()
+    }
+}
+
 internal object Blake2b {
+    fun new24(): Blake2b24 = Blake2b24()
+
     private val IV =
         longArrayOf(
             7640891576956012808L,

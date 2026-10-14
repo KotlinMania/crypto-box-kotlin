@@ -214,47 +214,120 @@ class CryptoBoxTest {
     }
 
     @Test
-    fun salsaBoxEncrypt() {
-        val aliceSk = SecretKey.fromBytes(aliceSecretKeyBytes)
-        val bobPk = PublicKey.fromBytes(bobPublicKeyBytes)
+    fun edwardsToMontgomery() {
+        val secretKey = SecretKey.from(aliceSecretKeyBytes)
+        val scalar = secretKey.toScalar()
+        val publicKey = PublicKey.from(secretKey)
+        assertEquals(secretKey.publicKey(), publicKey)
+        assertEquals(secretKey, SecretKey.from(scalar))
+        assertEquals(secretKey, SecretKey.fromScalar(scalar))
+        assertTrue(secretKey.eq(SecretKey.from(scalar)))
+    }
 
-        val aliceBox = SalsaBox(bobPk, aliceSk)
+    @Test
+    fun salsaBoxEncrypt() {
+        val aliceSk = SecretKey.from(aliceSecretKeyBytes)
+        val bobPk = PublicKey.from(bobPublicKeyBytes)
+
+        val aliceBox = SalsaBox.new(bobPk, aliceSk)
         val ciphertext = aliceBox.encrypt(nonce, plaintext)
 
         assertEquals(bytesToHex(salsaCiphertext), bytesToHex(ciphertext))
     }
 
     @Test
-    fun salsaBoxDecrypt() {
-        val bobSk = SecretKey.fromBytes(bobSecretKeyBytes)
-        val alicePk = PublicKey.fromBytes(alicePublicKeyBytes)
+    fun salsaBoxEncryptInPlaceDetached() {
+        val secretKey = SecretKey.from(aliceSecretKeyBytes)
+        val publicKey = PublicKey.from(bobPublicKeyBytes)
+        val buffer = plaintext.copyOf()
 
-        val bobBox = SalsaBox(alicePk, bobSk)
+        val tag =
+            SalsaBox
+                .new(publicKey, secretKey)
+                .encryptInPlaceDetached(nonce, ByteArray(0), buffer)
+
+        val expectedTag = salsaCiphertext.copyOfRange(0, 16)
+        val expectedCiphertext = salsaCiphertext.copyOfRange(16, salsaCiphertext.size)
+        assertEquals(bytesToHex(expectedTag), bytesToHex(tag))
+        assertEquals(bytesToHex(expectedCiphertext), bytesToHex(buffer))
+    }
+
+    @Test
+    fun salsaBoxDecrypt() {
+        val bobSk = SecretKey.from(bobSecretKeyBytes)
+        val alicePk = PublicKey.from(alicePublicKeyBytes)
+
+        val bobBox = SalsaBox.new(alicePk, bobSk)
         val decrypted = bobBox.decrypt(nonce, salsaCiphertext)
 
         assertTrue(plaintext.contentEquals(decrypted))
     }
 
     @Test
-    fun chachaBoxEncrypt() {
-        val aliceSk = SecretKey.fromBytes(aliceSecretKeyBytes)
-        val bobPk = PublicKey.fromBytes(bobPublicKeyBytes)
+    fun salsaBoxDecryptInPlaceDetached() {
+        val secretKey = SecretKey.from(bobSecretKeyBytes)
+        val publicKey = PublicKey.from(alicePublicKeyBytes)
+        val tag = salsaCiphertext.copyOfRange(0, 16)
+        val buffer = salsaCiphertext.copyOfRange(16, salsaCiphertext.size)
 
-        val aliceBox = ChaChaBox(bobPk, aliceSk)
+        SalsaBox
+            .new(publicKey, secretKey)
+            .decryptInPlaceDetached(nonce, ByteArray(0), buffer, tag)
+
+        assertEquals(bytesToHex(plaintext), bytesToHex(buffer))
+    }
+
+    @Test
+    fun chachaBoxEncrypt() {
+        val aliceSk = SecretKey.from(aliceSecretKeyBytes)
+        val bobPk = PublicKey.from(bobPublicKeyBytes)
+
+        val aliceBox = ChaChaBox.new(bobPk, aliceSk)
         val ciphertext = aliceBox.encrypt(nonce, plaintext)
 
         assertEquals(bytesToHex(chachaCiphertext), bytesToHex(ciphertext))
     }
 
     @Test
-    fun chachaBoxDecrypt() {
-        val bobSk = SecretKey.fromBytes(bobSecretKeyBytes)
-        val alicePk = PublicKey.fromBytes(alicePublicKeyBytes)
+    fun chachaBoxEncryptInPlaceDetached() {
+        val secretKey = SecretKey.from(aliceSecretKeyBytes)
+        val publicKey = PublicKey.from(bobPublicKeyBytes)
+        val buffer = plaintext.copyOf()
 
-        val bobBox = ChaChaBox(alicePk, bobSk)
+        val tag =
+            ChaChaBox
+                .new(publicKey, secretKey)
+                .encryptInPlaceDetached(nonce, ByteArray(0), buffer)
+
+        val expectedTag = chachaCiphertext.copyOfRange(0, 16)
+        val expectedCiphertext = chachaCiphertext.copyOfRange(16, chachaCiphertext.size)
+        assertEquals(bytesToHex(expectedTag), bytesToHex(tag))
+        assertEquals(bytesToHex(expectedCiphertext), bytesToHex(buffer))
+    }
+
+    @Test
+    fun chachaBoxDecrypt() {
+        val bobSk = SecretKey.from(bobSecretKeyBytes)
+        val alicePk = PublicKey.from(alicePublicKeyBytes)
+
+        val bobBox = ChaChaBox.new(alicePk, bobSk)
         val decrypted = bobBox.decrypt(nonce, chachaCiphertext)
 
         assertTrue(plaintext.contentEquals(decrypted))
+    }
+
+    @Test
+    fun chachaBoxDecryptInPlaceDetached() {
+        val secretKey = SecretKey.from(bobSecretKeyBytes)
+        val publicKey = PublicKey.from(alicePublicKeyBytes)
+        val tag = chachaCiphertext.copyOfRange(0, 16)
+        val buffer = chachaCiphertext.copyOfRange(16, chachaCiphertext.size)
+
+        ChaChaBox
+            .new(publicKey, secretKey)
+            .decryptInPlaceDetached(nonce, ByteArray(0), buffer, tag)
+
+        assertEquals(bytesToHex(plaintext), bytesToHex(buffer))
     }
 
     @Test
@@ -268,6 +341,33 @@ class CryptoBoxTest {
         val encrypted = pk.seal(sealPlaintext)
         val decrypted = sk.sealOpen(encrypted)
         assertTrue(sealPlaintext.contentEquals(decrypted))
+    }
+
+    @Test
+    fun testPublicKeySerialization() {
+        val sk = SecretKey.generate()
+        val publicKey = sk.publicKey()
+
+        val serializedBytes = publicKey.serialize()
+        val deserializedBytes = PublicKey.deserialize(serializedBytes)
+        assertEquals(publicKey, deserializedBytes)
+
+        val serializedHex = publicKey.serializeHex()
+        val deserializedHex = PublicKey.deserializeHex(serializedHex)
+        assertEquals(publicKey, deserializedHex)
+    }
+
+    @Test
+    fun testSecretKeySerialization() {
+        val secretKey = SecretKey.generate()
+
+        val serializedBytes = secretKey.serialize()
+        val deserializedBytes = SecretKey.deserialize(serializedBytes)
+        assertEquals(bytesToHex(secretKey.toBytes()), bytesToHex(deserializedBytes.toBytes()))
+
+        val serializedHex = secretKey.serializeHex()
+        val deserializedHex = SecretKey.deserializeHex(serializedHex)
+        assertEquals(bytesToHex(secretKey.toBytes()), bytesToHex(deserializedHex.toBytes()))
     }
 
     @Test
@@ -298,8 +398,10 @@ class CryptoBoxTest {
     fun testSecretKeyZeroize() {
         val sk = SecretKey.fromBytes(aliceSecretKeyBytes)
         assertEquals(bytesToHex(aliceSecretKeyBytes), bytesToHex(sk.toBytes()))
+        assertEquals("SecretKey([REDACTED])", sk.fmt())
         sk.zeroize()
         val zeroBytes = ByteArray(32)
         assertEquals(bytesToHex(zeroBytes), bytesToHex(sk.toBytes()))
+        assertEquals(bytesToHex(zeroBytes), bytesToHex(sk.toScalar()))
     }
 }
