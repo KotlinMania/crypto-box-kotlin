@@ -293,4 +293,13 @@ class CryptoBoxTest {
             }
         }
     }
+
+    @Test
+    fun testSecretKeyZeroize() {
+        val sk = SecretKey.fromBytes(aliceSecretKeyBytes)
+        assertEquals(bytesToHex(aliceSecretKeyBytes), bytesToHex(sk.toBytes()))
+        sk.zeroize()
+        val zeroBytes = ByteArray(32)
+        assertEquals(bytesToHex(zeroBytes), bytesToHex(sk.toBytes()))
+    }
 }
