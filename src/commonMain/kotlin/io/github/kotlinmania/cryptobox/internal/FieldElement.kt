@@ -239,7 +239,6 @@ internal class FieldElement internal constructor(
         val b3x2 = b3 * 2L
         val b5x2 = b5 * 2L
         val b7x2 = b7 * 2L
-        val b9x2 = b9 * 2L
 
         val r0 =
             a0 * b0 + a1x38 * b9 + a2x19 * b8 + a3x38 * b7 + a4x19 * b6 +
@@ -296,31 +295,31 @@ internal class FieldElement internal constructor(
         t1 = t1.mul(t2)
 
         t2 = t1.square()
-        for (i in 1 until 5) t2 = t2.square()
+        repeat(4) { t2 = t2.square() }
         t1 = t2.mul(t1)
 
         t2 = t1.square()
-        for (i in 1 until 10) t2 = t2.square()
+        repeat(9) { t2 = t2.square() }
         t2 = t2.mul(t1)
 
         var t3 = t2.square()
-        for (i in 1 until 20) t3 = t3.square()
+        repeat(19) { t3 = t3.square() }
         t2 = t3.mul(t2)
 
         t2 = t2.square()
-        for (i in 1 until 10) t2 = t2.square()
+        repeat(9) { t2 = t2.square() }
         t1 = t2.mul(t1)
 
         t2 = t1.square()
-        for (i in 1 until 50) t2 = t2.square()
+        repeat(49) { t2 = t2.square() }
         t2 = t2.mul(t1)
 
         t3 = t2.square()
-        for (i in 1 until 100) t3 = t3.square()
+        repeat(99) { t3 = t3.square() }
         t2 = t3.mul(t2)
 
         t2 = t2.square()
-        for (i in 1 until 50) t2 = t2.square()
+        repeat(49) { t2 = t2.square() }
         t1 = t2.mul(t1)
 
         t1 = t1.square()
@@ -349,7 +348,7 @@ internal class FieldElement internal constructor(
         var c8 = l8
         var c9 = l9
 
-        for (pass in 0 until 2) {
+        repeat(2) {
             var carry = c0 shr 26
             c0 = c0 and 0x3FFFFFFL
             c1 += carry
@@ -387,16 +386,16 @@ internal class FieldElement internal constructor(
 
     fun toByteArray(): ByteArray {
         val c = this.carry()
-        var c0 = c.l0
-        var c1 = c.l1
-        var c2 = c.l2
-        var c3 = c.l3
-        var c4 = c.l4
-        var c5 = c.l5
-        var c6 = c.l6
-        var c7 = c.l7
-        var c8 = c.l8
-        var c9 = c.l9
+        val c0 = c.l0
+        val c1 = c.l1
+        val c2 = c.l2
+        val c3 = c.l3
+        val c4 = c.l4
+        val c5 = c.l5
+        val c6 = c.l6
+        val c7 = c.l7
+        val c8 = c.l8
+        val c9 = c.l9
 
         var q0 = c0 + 19L
         var carry = q0 shr 26

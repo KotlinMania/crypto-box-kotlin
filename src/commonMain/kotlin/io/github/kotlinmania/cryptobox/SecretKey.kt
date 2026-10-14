@@ -164,9 +164,13 @@ public class SecretKey(
         public fun generate(): SecretKey {
             val bytes = ByteArray(KEY_SIZE)
             when (val res = getrandom(bytes)) {
-                is GetrandomResult.Ok -> return SecretKey(bytes)
-                is GetrandomResult.Failure ->
+                is GetrandomResult.Ok -> {
+                    return SecretKey(bytes)
+                }
+
+                is GetrandomResult.Failure -> {
                     error("Failed to obtain OS randomness for SecretKey: ${res.errorMessage ?: "unknown error"}")
+                }
             }
         }
 

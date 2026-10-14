@@ -49,7 +49,7 @@ internal object Salsa20 {
         x[14] = loadLittleEndian32(key, 28)
         x[15] = SIGMA[3]
 
-        for (i in 0 until 10) {
+        repeat(10) {
             x[4] = x[4] xor rotl(x[0] + x[12], 7)
             x[8] = x[8] xor rotl(x[4] + x[0], 9)
             x[12] = x[12] xor rotl(x[8] + x[4], 13)
@@ -123,7 +123,7 @@ internal object Salsa20 {
         input[15] = SIGMA[3]
 
         val x = input.copyOf()
-        for (i in 0 until 10) {
+        repeat(10) {
             x[4] = x[4] xor rotl(x[0] + x[12], 7)
             x[8] = x[8] xor rotl(x[4] + x[0], 9)
             x[12] = x[12] xor rotl(x[8] + x[4], 13)

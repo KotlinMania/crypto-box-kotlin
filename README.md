@@ -135,7 +135,7 @@ SecretKey.generate().use { secretKey ->
 
 - **JVM** (JDK 21+)
 - **Android** (API 24+)
-- **Apple (Swift Export + XCFramework)**: `macosArm64`, `iosArm64`, `iosSimulatorArm64`, `iosX64`, `tvosArm64`, `tvosSimulatorArm64`, `watchosArm64`, `watchosDeviceArm64`, `watchosSimulatorArm64`
+- **Apple (Swift Export + XCFramework)**: `macosArm64`, `iosArm64`, `iosSimulatorArm64`, `tvosArm64`, `tvosSimulatorArm64`, `watchosDeviceArm64`, `watchosSimulatorArm64`
 - **Linux**: `linuxX64`, `linuxArm64`
 - **Windows**: `mingwX64`
 - **Android Native**: `androidNativeArm64`, `androidNativeX64`

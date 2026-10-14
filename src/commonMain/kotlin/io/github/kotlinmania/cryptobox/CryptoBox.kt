@@ -133,9 +133,13 @@ public class CryptoBox(
         public fun generateNonce(): ByteArray {
             val nonce = ByteArray(NONCE_SIZE)
             when (val res = getrandom(nonce)) {
-                is GetrandomResult.Ok -> return nonce
-                is GetrandomResult.Failure ->
+                is GetrandomResult.Ok -> {
+                    return nonce
+                }
+
+                is GetrandomResult.Failure -> {
                     error("Failed to obtain OS randomness for nonce: ${res.errorMessage ?: "unknown error"}")
+                }
             }
         }
 
