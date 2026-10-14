@@ -28,7 +28,7 @@ internal object ChaCha20 {
     }
 
     private fun rounds(x: IntArray) {
-        for (i in 0 until 10) {
+        repeat(10) {
             // Column round
             qr(x, 0, 4, 8, 12)
             qr(x, 1, 5, 9, 13)
