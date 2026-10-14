@@ -1,6 +1,8 @@
 // port-lint: source lib.rs
 package io.github.kotlinmania.cryptobox.internal
 
+import io.github.kotlinmania.constanttimeeq.constantTimeEq16
+
 internal object Salsa20 {
     private val SIGMA =
         intArrayOf(
@@ -170,9 +172,15 @@ internal object Salsa20 {
         return out
     }
 
-    fun xsalsa20poly1305Encrypt(key: ByteArray, nonce: ByteArray, plaintext: ByteArray): ByteArray {
+    fun xsalsa20poly1305EncryptInPlaceDetached(
+        key: ByteArray,
+        nonce: ByteArray,
+        associatedData: ByteArray,
+        buffer: ByteArray,
+    ): ByteArray {
         require(key.size == 32)
         require(nonce.size == 24)
+        require(associatedData.isEmpty()) { "Additional associated data is not supported" }
 
         val subkey = hsalsa20(key, nonce.copyOfRange(0, 16))
         val salsaNonce = nonce.copyOfRange(16, 24)
@@ -180,25 +188,69 @@ internal object Salsa20 {
         val block0 = salsa20Block(subkey, salsaNonce, 0L)
         val polyKey = block0.copyOfRange(0, 32)
 
-        val ciphertext = ByteArray(plaintext.size)
         // First 32 bytes of keystream come from block0[32..64]
-        val firstChunk = minOf(32, plaintext.size)
+        val firstChunk = minOf(32, buffer.size)
         for (i in 0 until firstChunk) {
-            ciphertext[i] = (plaintext[i].toInt() xor block0[32 + i].toInt()).toByte()
+            buffer[i] = (buffer[i].toInt() xor block0[32 + i].toInt()).toByte()
         }
 
         var offset = firstChunk
         var counter = 1L
-        while (offset < plaintext.size) {
+        while (offset < buffer.size) {
             val block = salsa20Block(subkey, salsaNonce, counter++)
-            val toProcess = minOf(64, plaintext.size - offset)
+            val toProcess = minOf(64, buffer.size - offset)
             for (i in 0 until toProcess) {
-                ciphertext[offset + i] = (plaintext[offset + i].toInt() xor block[i].toInt()).toByte()
+                buffer[offset + i] = (buffer[offset + i].toInt() xor block[i].toInt()).toByte()
             }
             offset += toProcess
         }
 
-        val tag = Poly1305.authenticate(polyKey, ciphertext)
+        return Poly1305.authenticate(polyKey, buffer)
+    }
+
+    fun xsalsa20poly1305DecryptInPlaceDetached(
+        key: ByteArray,
+        nonce: ByteArray,
+        associatedData: ByteArray,
+        buffer: ByteArray,
+        tag: ByteArray,
+    ) {
+        require(key.size == 32)
+        require(nonce.size == 24)
+        require(tag.size == 16) { "Invalid tag length: expected 16 bytes, got ${tag.size}" }
+        require(associatedData.isEmpty()) { "Additional associated data is not supported" }
+
+        val subkey = hsalsa20(key, nonce.copyOfRange(0, 16))
+        val salsaNonce = nonce.copyOfRange(16, 24)
+
+        val block0 = salsa20Block(subkey, salsaNonce, 0L)
+        val polyKey = block0.copyOfRange(0, 32)
+
+        val computedTag = Poly1305.authenticate(polyKey, buffer)
+        if (!constantTimeEq16(tag, computedTag)) {
+            throw IllegalArgumentException("Decryption failed: tag mismatch")
+        }
+
+        val firstChunk = minOf(32, buffer.size)
+        for (i in 0 until firstChunk) {
+            buffer[i] = (buffer[i].toInt() xor block0[32 + i].toInt()).toByte()
+        }
+
+        var offset = firstChunk
+        var counter = 1L
+        while (offset < buffer.size) {
+            val block = salsa20Block(subkey, salsaNonce, counter++)
+            val toProcess = minOf(64, buffer.size - offset)
+            for (i in 0 until toProcess) {
+                buffer[offset + i] = (buffer[offset + i].toInt() xor block[i].toInt()).toByte()
+            }
+            offset += toProcess
+        }
+    }
+
+    fun xsalsa20poly1305Encrypt(key: ByteArray, nonce: ByteArray, plaintext: ByteArray): ByteArray {
+        val ciphertext = plaintext.copyOf()
+        val tag = xsalsa20poly1305EncryptInPlaceDetached(key, nonce, ByteArray(0), ciphertext)
         val result = ByteArray(16 + ciphertext.size)
         tag.copyInto(result, 0, 0, 16)
         ciphertext.copyInto(result, 16, 0, ciphertext.size)
@@ -206,44 +258,10 @@ internal object Salsa20 {
     }
 
     fun xsalsa20poly1305Decrypt(key: ByteArray, nonce: ByteArray, ciphertextWithTag: ByteArray): ByteArray {
-        require(key.size == 32)
-        require(nonce.size == 24)
         require(ciphertextWithTag.size >= 16) { "Ciphertext too short" }
-
         val tag = ciphertextWithTag.copyOfRange(0, 16)
-        val ciphertext = ciphertextWithTag.copyOfRange(16, ciphertextWithTag.size)
-
-        val subkey = hsalsa20(key, nonce.copyOfRange(0, 16))
-        val salsaNonce = nonce.copyOfRange(16, 24)
-
-        val block0 = salsa20Block(subkey, salsaNonce, 0L)
-        val polyKey = block0.copyOfRange(0, 32)
-
-        val computedTag = Poly1305.authenticate(polyKey, ciphertext)
-        var diff = 0
-        for (i in 0 until 16) {
-            diff = diff or (tag[i].toInt() xor computedTag[i].toInt())
-        }
-        if (diff != 0) {
-            throw IllegalArgumentException("Decryption failed: tag mismatch")
-        }
-
-        val plaintext = ByteArray(ciphertext.size)
-        val firstChunk = minOf(32, ciphertext.size)
-        for (i in 0 until firstChunk) {
-            plaintext[i] = (ciphertext[i].toInt() xor block0[32 + i].toInt()).toByte()
-        }
-
-        var offset = firstChunk
-        var counter = 1L
-        while (offset < ciphertext.size) {
-            val block = salsa20Block(subkey, salsaNonce, counter++)
-            val toProcess = minOf(64, ciphertext.size - offset)
-            for (i in 0 until toProcess) {
-                plaintext[offset + i] = (ciphertext[offset + i].toInt() xor block[i].toInt()).toByte()
-            }
-            offset += toProcess
-        }
-        return plaintext
+        val buffer = ciphertextWithTag.copyOfRange(16, ciphertextWithTag.size)
+        xsalsa20poly1305DecryptInPlaceDetached(key, nonce, ByteArray(0), buffer, tag)
+        return buffer
     }
 }

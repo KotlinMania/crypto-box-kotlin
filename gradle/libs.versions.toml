@@ -9,6 +9,9 @@ vanniktech = "0.37.0"
 detekt = "1.23.8"
 ktlint = "14.2.0"
 kotlinxBenchmark = "0.5.0"
+constantTimeEq = "0.1.1"
+digest = "0.1.0"
+getrandom = "0.1.0"
 zeroize = "0.1.0"
 
 [plugins]
@@ -28,6 +31,9 @@ kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "datetime" }
 collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "collectionsImmutable" }
 kotlinx-benchmark-runtime = { module = "org.jetbrains.kotlinx:kotlinx-benchmark-runtime", version.ref = "kotlinxBenchmark" }
+constant-time-eq = { module = "io.github.kotlinmania:constant-time-eq-kotlin", version.ref = "constantTimeEq" }
+digest = { module = "io.github.kotlinmania:digest-kotlin", version.ref = "digest" }
+getrandom = { module = "io.github.kotlinmania:getrandom-kotlin", version.ref = "getrandom" }
 zeroize = { module = "io.github.kotlinmania:zeroize-kotlin", version.ref = "zeroize" }
 
 [bundles]
@@ -37,5 +43,8 @@ crypto-box-commonMain = [
   "kotlinx-serialization-json",
   "kotlinx-datetime",
   "collections-immutable",
+  "constant-time-eq",
+  "digest",
+  "getrandom",
   "zeroize",
 ]
