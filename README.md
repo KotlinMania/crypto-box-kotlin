@@ -14,7 +14,7 @@ Add `crypto-box-kotlin` to your `build.gradle.kts`:
 
 ```kotlin
 dependencies {
-    implementation("io.github.kotlinmania:crypto-box-kotlin:0.2.0")
+    implementation("io.github.kotlinmania:crypto-box-kotlin:0.2.1")
 }
 ```
 
