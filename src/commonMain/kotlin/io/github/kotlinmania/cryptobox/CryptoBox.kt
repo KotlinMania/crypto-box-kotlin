@@ -55,11 +55,6 @@ public typealias Tag = ByteArray
  */
 public typealias Nonce = ByteArray
 
-/**
- * Error type thrown when key slice conversion or authenticated decryption fails.
- */
-public typealias Error = IllegalArgumentException
-
 internal fun getSealNonce(ephemeralPk: PublicKey, recipientPk: PublicKey): ByteArray {
     val hasher = Blake2b.new24()
     hasher.update(ephemeralPk.asBytes())
