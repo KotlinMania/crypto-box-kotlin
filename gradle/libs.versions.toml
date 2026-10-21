@@ -13,6 +13,7 @@ constantTimeEq = "0.1.1"
 digest = "0.1.0"
 getrandom = "0.1.0"
 zeroize = "0.1.1"
+procMacro = "0.1.4"
 
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
@@ -34,6 +35,7 @@ constant-time-eq = { module = "io.github.kotlinmania:constant-time-eq-kotlin", v
 digest = { module = "io.github.kotlinmania:digest-kotlin", version.ref = "digest" }
 getrandom = { module = "io.github.kotlinmania:getrandom-kotlin", version.ref = "getrandom" }
 zeroize = { module = "io.github.kotlinmania:zeroize-kotlin", version.ref = "zeroize" }
+proc-macro = { module = "io.github.kotlinmania:proc-macro-kotlin", version.ref = "procMacro" }
 
 [bundles]
 crypto-box-commonMain = [
@@ -45,5 +47,7 @@ crypto-box-commonMain = [
   "constant-time-eq",
   "digest",
   "getrandom",
+]
+crypto-box-commonMainApi = [
   "zeroize",
 ]
