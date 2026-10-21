@@ -88,7 +88,7 @@ public class SecretKey(
     }
 
     /**
-     * Alias for [unseal] matching libsodium's `crypto_box_seal_open`.
+     * Alias for [unseal] matching libsodium's sealed box open.
      */
     public fun sealOpen(ciphertext: ByteArray): ByteArray = unseal(ciphertext)
 
